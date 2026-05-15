@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>一键翻译工具</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .box {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 12px;
+            resize: vertical;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            border-radius: 40px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            background: #e9ecef;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 16px;
+            white-space: pre-wrap;
+        }
+        h1 {
+            font-size: 28px;
+            margin-top: 0;
+        }
+        .footer {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+<div class="box">
+    <h1>🌍 一键翻译助手</h1>
+    <p>输入外文（目前支持英文 → 简体中文）</p>
+    <textarea id="inputText" placeholder="例如：Hello, this is a translation tool. It's very easy to use!"></textarea>
+    <br>
+    <button onclick="translateText()">✨ 翻译</button>
+    <div id="result" class="result">翻译结果会显示在这里</div>
+</div>
+<div class="footer">
+    免费使用 MyMemory 翻译 API | 纯前端，无后端
+</div>
+
+<script>
+    async function translateText() {
+        const input = document.getElementById('inputText').value.trim();
+        const resultDiv = document.getElementById('result');
+        
+        if (!input) {
+            resultDiv.innerText = '⚠️ 请输入要翻译的文字';
+            return;
+        }
+        
+        resultDiv.innerText = '🔄 翻译中，请稍候...';
+        
+        try {
+            // 使用免费的 MyMemory 翻译 API（无需密钥）
+            const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(input)}&langpair=en|zh-CN`;
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            // 提取翻译结果
+            let translated = data.responseData.translatedText;
+            // 去掉可能出现的 HTML 标签
+            translated = translated.replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+            resultDiv.innerText = translated;
+        } catch (error) {
+            resultDiv.innerText = '❌ 翻译失败，请检查网络后重试';
+            console.error(error);
+        }
+    }
+</script>
+</body>
+</html>
