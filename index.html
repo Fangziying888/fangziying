@@ -2,104 +2,192 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>一键翻译工具</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星语翻译 | 创意版</title>
     <style>
-        body {
-            font-family: system-ui, sans-serif;
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-            background: #f5f5f5;
+        :root {
+            --bg-main: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-bg: rgba(255,255,255,0.15);
+            --text-color: #fff;
+            --btn-bg: #fff;
+            --btn-text: #667eea;
         }
-        .box {
-            background: white;
+        .neon-theme {
+            --bg-main: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            --card-bg: rgba(255,255,255,0.08);
+            --text-color: #00ffd5;
+            --btn-bg: #00ffd5;
+            --btn-text: #0f0c29;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        body {
+            min-height: 100vh;
+            background: var(--bg-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--text-color);
+            transition: all 0.5s ease;
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .input-area, .output-area {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            opacity: 0.9;
         }
         textarea {
             width: 100%;
-            height: 150px;
+            height: 100px;
             padding: 12px;
-            font-size: 16px;
-            border: 1px solid #ccc;
             border-radius: 12px;
-            resize: vertical;
+            border: none;
+            background: rgba(255,255,255,0.2);
+            color: var(--text-color);
+            font-size: 16px;
+            resize: none;
+        }
+        textarea::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+        .btn-group {
+            display: flex;
+            gap: 12px;
         }
         button {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 18px;
-            border-radius: 40px;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-        button:hover {
-            background: #0056b3;
-        }
-        .result {
-            background: #e9ecef;
+            flex: 1;
+            padding: 12px;
             border-radius: 12px;
-            padding: 15px;
-            margin-top: 20px;
+            border: none;
             font-size: 16px;
-            white-space: pre-wrap;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
         }
-        h1 {
-            font-size: 28px;
-            margin-top: 0;
+        .translate-btn {
+            background: var(--btn-bg);
+            color: var(--btn-text);
         }
-        .footer {
-            font-size: 14px;
-            color: #666;
+        .clear-btn {
+            background: rgba(255,255,255,0.2);
+            color: var(--text-color);
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .result-box {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 12px;
+            min-height: 60px;
+            word-break: break-all;
+        }
+        .copy-tip {
             text-align: center;
-            margin-top: 30px;
+            margin-top: 10px;
+            font-size: 12px;
+            opacity: 0.7;
         }
     </style>
 </head>
 <body>
-<div class="box">
-    <h1>🌍 一键翻译助手</h1>
-    <p>输入外文（目前支持英文 → 简体中文）</p>
-    <textarea id="inputText" placeholder="例如：Hello, this is a translation tool. It's very easy to use!"></textarea>
-    <br>
-    <button onclick="translateText()">✨ 翻译</button>
-    <div id="result" class="result">翻译结果会显示在这里</div>
-</div>
-<div class="footer">
-    免费使用 MyMemory 翻译 API | 纯前端，无后端
-</div>
+    <button class="theme-toggle" onclick="toggleTheme()">切换霓虹主题</button>
+    <div class="card">
+        <div class="title">✨ 星语翻译助手</div>
+        
+        <div class="input-area">
+            <label>英文原文</label>
+            <textarea id="inputText" placeholder="输入英文，例如：The stars are beautiful tonight"></textarea>
+        </div>
 
-<script>
-    async function translateText() {
-        const input = document.getElementById('inputText').value.trim();
-        const resultDiv = document.getElementById('result');
-        
-        if (!input) {
-            resultDiv.innerText = '⚠️ 请输入要翻译的文字';
-            return;
+        <div class="btn-group">
+            <button class="translate-btn" onclick="translateText()">一键翻译</button>
+            <button class="clear-btn" onclick="clearInput()">清空内容</button>
+        </div>
+
+        <div class="output-area" style="margin-top: 18px;">
+            <label>中文译文</label>
+            <div class="result-box" id="resultBox">译文将显示在这里...</div>
+        </div>
+        <p class="copy-tip">点击译文即可一键复制结果</p>
+    </div>
+    <script>
+        // 切换主题
+        function toggleTheme() {
+            document.body.classList.toggle('neon-theme');
         }
-        
-        resultDiv.innerText = '🔄 翻译中，请稍候...';
-        
-        try {
-            // 使用免费的 MyMemory 翻译 API（无需密钥）
-            const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(input)}&langpair=en|zh-CN`;
-            const response = await fetch(url);
-            const data = await response.json();
-            
-            // 提取翻译结果
-            let translated = data.responseData.translatedText;
-            // 去掉可能出现的 HTML 标签
-            translated = translated.replace(/&quot;/g, '"').replace(/&#39;/g, "'");
-            resultDiv.innerText = translated;
-        } catch (error) {
-            resultDiv.innerText = '❌ 翻译失败，请检查网络后重试';
-            console.error(error);
+
+        // 清空输入
+        function clearInput() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('resultBox').innerText = '译文将显示在这里...';
         }
-    }
-</script>
+
+        // 翻译核心逻辑
+        async function translateText() {
+            const text = document.getElementById('inputText').value.trim();
+            if (!text) {
+                alert('请先输入英文内容');
+                return;
+            }
+            const resultBox = document.getElementById('resultBox');
+            resultBox.innerText = '翻译中...';
+
+            try {
+                const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|zh-CN`;
+                const res = await fetch(url);
+                const data = await res.json();
+                resultBox.innerText = data.responseData.translatedText;
+            } catch (err) {
+                resultBox.innerText = '翻译失败，请稍后再试';
+            }
+        }
+
+        // 点击复制结果
+        document.getElementById('resultBox').addEventListener('click', function() {
+            const text = this.innerText;
+            if (text && text !== '译文将显示在这里...' && text !== '翻译中...' && text !== '翻译失败，请稍后再试') {
+                navigator.clipboard.writeText(text);
+                alert('译文已复制到剪贴板！');
+            }
+        });
+    </script>
 </body>
 </html>
